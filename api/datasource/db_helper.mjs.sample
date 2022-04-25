@@ -1,0 +1,14 @@
+import mysql from 'mysql';
+
+export const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'your user',
+    password: 'your password',
+    database: 'kinopoisk_duo'
+})
+
+connection.connect(function (err) {
+    if (err) {
+        console.log(err.message);
+    }
+});
