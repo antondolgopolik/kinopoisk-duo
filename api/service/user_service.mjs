@@ -14,13 +14,19 @@ export function createNewUser(username, password, tgId, cb) {
 
 export function getUsers(page, cb) {
     UserDao.readWithPage(page, (users) => {
-       cb(users);
+        cb(users);
     });
 }
 
 export function countUsers(cb) {
     UserDao.count((userCount) => {
-       cb(userCount);
+        cb(userCount);
+    });
+}
+
+export function getUserByUserId(userId, cb) {
+    UserDao.readByUserId(userId, (user) => {
+        cb(user);
     });
 }
 
