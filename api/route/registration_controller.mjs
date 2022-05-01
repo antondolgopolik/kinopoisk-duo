@@ -11,9 +11,9 @@ function register(req, res, next) {
     const password = req.body.password;
     const tgCode = req.body.tg_code;
     // Создать пользователя
-    UserFacade.createNewUserWithTgCode(username, password, tgCode, function (user) {
+    UserFacade.createNewUserWithTgCode(username, password, tgCode, (user) => {
         // Создать токен
-        UserTokenService.createNewUserToken(user, function (userToken) {
+        UserTokenService.createNewUserToken(user, (userToken) => {
             res.json({token: userToken.token});
         });
     });

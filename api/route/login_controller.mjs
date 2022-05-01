@@ -11,9 +11,9 @@ function login(req, res, next) {
     const username = req.body.username;
     const password = req.body.password;
     // Проверить username и password
-    UserService.checkPassword(username, password, function (user, valid) {
+    UserService.checkPassword(username, password, (user, valid) => {
         if (valid) {
-            UserTokenService.createNewUserToken(user, function (userToken) {
+            UserTokenService.createNewUserToken(user, (userToken) => {
                 res.json({token: userToken.token});
             });
         } else {
