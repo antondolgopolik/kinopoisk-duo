@@ -4,12 +4,17 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import cors from 'cors';
 
-// Routers
-import * as IndexController from './route/index_controller.mjs';
+// Фильтры
+import * as AuthTokenFilter from './filter/auth_token_filter.mjs';
+
+// Контроллеры
 import * as RegistrationController from './route/registration_controller.mjs'
-import * as LoginController from './route/login_controller.mjs'
+import * as LoginController from './route/login_controller.mjs';
+import * as LogoutController from './route/logout_controller.mjs';
 import * as UserController from './route/user_controller.mjs';
+import * as UserProfileController from './route/user_profile_controller.mjs';
 import * as MovieController from './route/movie_controller.mjs';
+import * as WatchTogetherRequestController from './route/watch_together_request_controller.mjs';
 
 export const app = express();
 
@@ -19,11 +24,15 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 
-app.use('/', IndexController.router);
+app.use(AuthTokenFilter.extractAuthToken);
+
 app.use('/api/registration', RegistrationController.router);
-app.use('/api/login', LoginController.router)
+app.use('/api/login', LoginController.router);
+app.use('/api/logout', LogoutController.router)
 app.use('/api/users', UserController.router);
 app.use('/api/movies', MovieController.router);
+app.use('/api/profile', UserProfileController.router);
+app.use('/api/watch-together-requests', WatchTogetherRequestController.router);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

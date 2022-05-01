@@ -1,18 +1,28 @@
 import express from 'express';
 import createError from "http-errors";
-import * as MovieService from '../service/movie_service.mjs';
+import * as MovieFacade from '../facade/movie_facade.mjs';
 
 export const router = express.Router();
-router.get('/:movieId(\\d+)', getMovie);
+router.get('/:movieId(\\d+)', getMovieDetailsPageData);
+router.get('/', getMoviePageData);
 
-function getMovie(req, res, next) {
+function getMovieDetailsPageData(req, res, next) {
     const movieId = req.params.movieId;
-    // Поиск
-    MovieService.getMovie(movieId, function (movie) {
-        if (movie !== null) {
-            res.json(movie);
-        } else {
-            next(createError(404, "Movie with given id wasn't found"));
-        }
+    MovieFacade.getMovieDetailsPageData(req.authToken, movieId, (movieDetailsPageData) => {
+        res.json(movieDetailsPageData);
     });
+}
+
+function getMoviePageData(req, res, next) {
+    const q = req.query.q;
+    const page = req.query.page !== undefined ? req.query.page : 0;
+    if (q !== undefined) {
+        MovieFacade.searchMoviePageData(q, page, (moviePageData) => {
+            res.json(moviePageData);
+        });
+    } else {
+        MovieFacade.getMoviePageData(page, (moviePageData) => {
+            res.json(moviePageData);
+        });
+    }
 }
