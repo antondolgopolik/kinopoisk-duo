@@ -14,18 +14,32 @@ export function create(username, hashedPassword, tgId, cb) {
     });
 }
 
+export function readByUserId(userId, cb) {
+    const sql = 'SELECT * FROM users WHERE user_id = ?';
+    connection.query(sql, [userId], (err, results, fields) => {
+        if (err) {
+            throw 'Failed to select user!';
+        }
+        cb(resultsToUser(results));
+    });
+}
+
 export function readByUsername(username, cb) {
-    const sql = 'SELECT * from users WHERE username = ?';
+    const sql = 'SELECT * FROM users WHERE username = ?';
     connection.query(sql, [username], (err, results, fields) => {
         if (err) {
             throw 'Failed to select user!'
         }
-        if ((typeof results !== 'undefined') && (results.length > 0)) {
-            cb(rowToUser(results[0]));
-        } else {
-            cb(null);
-        }
+        cb(resultsToUser(results));
     });
+}
+
+function resultsToUser(results) {
+    if ((typeof results !== 'undefined') && (results.length > 0)) {
+        return rowToUser(results[0]);
+    } else {
+        return null;
+    }
 }
 
 export function readWithPage(page, cb) {
