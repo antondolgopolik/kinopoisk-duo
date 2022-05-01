@@ -30,11 +30,12 @@ export function readAvailableForUser(userId, movieId, cb) {
     const sql = `SELECT wtr.*
                  FROM watch_together_requests wtr
                  WHERE wtr.movie_id = ?
-                    AND wtr.user_id != ?
-                    AND wtr.user_id NOT IN (SELECT ignore_user_id FROM watch_together_request_ignores wtri WHERE wtri.user_id = ?)
-                    AND wtr.is_active = true
+                      AND wtr.user_id != ?
+                      AND wtr.user_id NOT IN
+                          (SELECT ignore_user_id FROM watch_together_request_ignores wtri WHERE wtri.movie_id = ? AND wtri.user_id = ?)
+                      AND wtr.is_active = true
                  LIMIT 1`;
-    connection.query(sql, [movieId, userId, userId], (err, results, fields) => {
+    connection.query(sql, [movieId, userId, movieId, userId], (err, results, fields) => {
         if (err) {
             throw 'Failed to select watch together requests!';
         }
