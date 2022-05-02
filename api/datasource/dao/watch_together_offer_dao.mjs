@@ -1,39 +1,26 @@
 import {connection} from '../db_helper.mjs';
 import {WatchTogetherOffer} from "../../entity/watch_together_offer.mjs";
 
-export function create(userId, movieId, offeredUserId, isAccepted, cb) {
+export async function create(userId, movieId, offeredUserId, isAccepted) {
     const sql = 'INSERT INTO watch_together_offers (user_id, movie_id, offered_user_id, is_accepted) VALUES (?, ?, ?, ?)';
-    connection.query(sql, [userId, movieId, offeredUserId, isAccepted], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to insert new watch together offer!';
-        }
-        cb(new WatchTogetherOffer(results.insertId, userId, movieId, offeredUserId, isAccepted));
-    });
+    const [rows, fields] = await connection.query(sql, [userId, movieId, offeredUserId, isAccepted]);
+    return new WatchTogetherOffer(rows.insertId, userId, movieId, offeredUserId, isAccepted);
 }
 
-export function read(userId, movieId, cb) {
+export async function read(userId, movieId) {
     const sql = 'SELECT * FROM watch_together_offers WHERE user_id = ? AND movie_id = ?';
-    connection.query(sql, [userId, movieId], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to select watch together offer!';
-        }
-        if ((typeof results !== 'undefined') && (results.length > 0)) {
-            const row = results[0];
-            cb(rowToWatchTogetherOffer(row));
-        } else {
-            cb(null);
-        }
-    });
+    const [rows, fields] = await connection.query(sql, [userId, movieId]);
+    if (rows.length > 0) {
+        return rowToWatchTogetherOffer(rows[0]);
+    } else {
+        return null;
+    }
 }
 
-export function remove(userId, movieId, cb) {
+export async function remove(userId, movieId) {
     const sql = 'DELETE FROM watch_together_offers WHERE user_id = ? AND movie_id = ?';
-    connection.query(sql, [userId, movieId], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to remove watch together offer!';
-        }
-        cb(results.affectedRows > 0);
-    });
+    const [rows, fields] = await connection.query(sql, [userId, movieId]);
+    return rows.affectedRows > 0;
 }
 
 function rowToWatchTogetherOffer(row) {

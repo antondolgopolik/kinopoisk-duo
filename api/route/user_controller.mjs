@@ -6,25 +6,20 @@ export const router = express.Router();
 router.get('/', getUserPageData);
 router.get('/me', getCurrentUser)
 
-function getUserPageData(req, res, next) {
+async function getUserPageData(req, res, next) {
     const page = req.query.page !== undefined ? req.query.page : 0;
-    UserFacade.getUserPageData(page, (userPageData) => {
-        res.json(userPageData);
-    });
+    res.json(await UserFacade.getUserPageData(page));
 }
 
-function getCurrentUser(req, res, next) {
+async function getCurrentUser(req, res, next) {
     // Проверка наличия токена
     if (req.authToken !== undefined) {
-        // Получения пользовательских данных по токену
-        UserFacade.getUserDataByToken(req.authToken, (userData) => {
-            // Проверка наличия данных, полученных по токену
-            if (userData !== null) {
-                res.json(userData);
-            } else {
-                res.status(401).send('Token is wrong or expired');
-            }
-        });
+        const userData = await UserFacade.getUserDataByToken(req.authToken);
+        if (userData !== null) {
+            res.json(userData);
+        } else {
+            res.status(401).send('Token is wrong or expired');
+        }
     } else {
         next(createError(401, 'Token is required'));
     }

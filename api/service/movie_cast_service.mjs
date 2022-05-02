@@ -1,7 +1,5 @@
 import * as MovieCastDao from '../datasource/dao/movie_cast_dao.mjs';
 
-export function readMovieCastsForMovie(movieId, cb) {
-    MovieCastDao.readAllForMovie(movieId, (movieCasts) => {
-        cb(movieCasts);
-    });
+export async function readMovieCastsForMovie(movieId) {
+    return MovieCastDao.readAllForMovie(movieId);
 }

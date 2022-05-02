@@ -1,5 +1,6 @@
 export class MoviePageItemData {
-    constructor(title, overview, movieStatus, voteAverage) {
+    constructor(movieId, title, overview, movieStatus, voteAverage) {
+        this.movieId = movieId;
         this.title = title;
         this.overview = overview;
         this.movieStatus = movieStatus;

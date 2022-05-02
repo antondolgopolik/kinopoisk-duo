@@ -1,7 +1,5 @@
 import * as GenreDao from '../datasource/dao/genre_dao.mjs';
 
-export function readGenresForMovie(movieId, cb) {
-    GenreDao.readAllForMovie(movieId, (genres) => {
-        cb(genres);
-    });
+export async function readGenresForMovie(movieId) {
+    return GenreDao.readAllForMovie(movieId);
 }

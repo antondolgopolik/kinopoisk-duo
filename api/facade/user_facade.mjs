@@ -7,39 +7,33 @@ import {UserPageData} from "../dto/user_page_data.mjs";
 
 const pageSize = 10;
 
-export function createNewUserWithTgCode(username, password, tgCode, cb) {
-    // Получить tg id из tg code
-    TgCodeService.getTgCodeByTgCode(tgCode, (tgCode) => {
-        // Создать нового пользователя
-        UserService.createNewUser(username, password, tgCode.tgId, (user) => {
-            cb(user);
-        })
-    });
+export async function createNewUserWithTgCode(username, password, tgCode) {
+    const tgCodeEntity = await TgCodeService.getTgCodeByTgCode(tgCode);
+    if (tgCodeEntity !== null) {
+        return UserService.createNewUser(username, password, tgCodeEntity.tgId);
+    } else {
+        return null;
+    }
 }
 
-export function getUserDataByToken(token, cb) {
-    UserService.getUserByTokenWithExpireCheck(token, (user) => {
-        // Проверка наличия пользователя и токена
-        if (user !== null) {
-            cb(toUserData(user));
-        } else {
-            cb(null);
-        }
-    });
+export async function getUserDataByToken(token) {
+    const user = await UserService.getUserByTokenWithExpireCheck(token);
+    if (user !== null) {
+        return toUserData(user);
+    } else {
+        return null;
+    }
 }
 
 function toUserData(user) {
     return new UserData(user.userId, user.username, user.tgId);
 }
 
-export function getUserPageData(page, cb) {
-    // Кол-во страниц
-    UserService.countUsers((userCount) => {
-        // Пользователи
-        UserService.getUsers(page, (users) => {
-            cb(toUserPageData(userCount, users));
-        });
-    });
+export async function getUserPageData(page) {
+    const userCountPromise = UserService.countUsers();
+    const usersPromise = UserService.getUsers(page);
+    const [userCount, users] = await Promise.all([userCountPromise, usersPromise]);
+    return toUserPageData(userCount, users);
 }
 
 function toUserPageData(userCount, users) {
@@ -53,19 +47,14 @@ function toUserPageData(userCount, users) {
     return new UserPageData(pageCount, usersData);
 }
 
-export function getUserProfilePageData(username, cb) {
-    // Получить user по username
-    UserService.getUserByUsername(username, (user) => {
-        // Провекра наличия пользователя
-        if (user !== null) {
-            // Получить watch together requests для пользователя
-            WatchTogetherRequestService.getWatchTogetherRequestsForUser(user.userId, (watchTogetherRequests) => {
-                cb(toUserProfilePageData(user, watchTogetherRequests));
-            });
-        } else {
-            cb(null);
-        }
-    });
+export async function getUserProfilePageData(username) {
+    const user = await UserService.getUserByUsername(username);
+    if (user !== null) {
+        const wtrs = await WatchTogetherRequestService.getWatchTogetherRequestsForUser(user.userId);
+        return toUserProfilePageData(user, wtrs);
+    } else {
+        return null;
+    }
 }
 
 function toUserProfilePageData(user, watchTogetherRequests) {

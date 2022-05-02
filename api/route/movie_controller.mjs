@@ -6,23 +6,22 @@ export const router = express.Router();
 router.get('/:movieId(\\d+)', getMovieDetailsPageData);
 router.get('/', getMoviePageData);
 
-function getMovieDetailsPageData(req, res, next) {
+async function getMovieDetailsPageData(req, res, next) {
     const movieId = req.params.movieId;
-    MovieFacade.getMovieDetailsPageData(req.authToken, movieId, (movieDetailsPageData) => {
+    const movieDetailsPageData = await MovieFacade.getMovieDetailsPageData(req.authToken, movieId);
+    if (movieDetailsPageData !== null) {
         res.json(movieDetailsPageData);
-    });
+    } else {
+        next(createError(404));
+    }
 }
 
-function getMoviePageData(req, res, next) {
+async function getMoviePageData(req, res, next) {
     const q = req.query.q;
-    const page = req.query.page !== undefined ? req.query.page : 0;
+    const page = req.query.page !== undefined ? parseInt(req.query.page) : 0;
     if (q !== undefined) {
-        MovieFacade.searchMoviePageData(q, page, (moviePageData) => {
-            res.json(moviePageData);
-        });
+        res.json(await MovieFacade.searchMoviePageData(q, page));
     } else {
-        MovieFacade.getMoviePageData(page, (moviePageData) => {
-            res.json(moviePageData);
-        });
+        res.json(await MovieFacade.getMoviePageData(page));
     }
 }
