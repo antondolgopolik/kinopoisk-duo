@@ -57,7 +57,10 @@ export async function count() {
 }
 
 export async function readByToken(token) {
-    const sql = 'SELECT * FROM users JOIN user_tokens WHERE token = ?';
+    const sql = `SELECT *
+                 FROM users u
+                        JOIN user_tokens ut ON u.user_id = ut.user_id
+                 WHERE ut.token = ?`;
     const [rows, fields] = await connection.query(sql, [token]);
     if (rows.length > 0) {
         const row = rows[0];
