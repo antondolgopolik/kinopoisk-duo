@@ -1,22 +1,14 @@
 import {connection} from '../db_helper.mjs';
 import {UserToken} from '../../entity/user_token.mjs';
 
-export function create(token, userId, expires, cb) {
+export async function create(token, userId, expires) {
     const sql = 'INSERT INTO user_tokens (token, user_id, expires) VALUES (?, ?, ?)';
-    connection.query(sql, [token, userId, expires], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to create new token!';
-        }
-        cb(new UserToken(token, userId, expires));
-    });
+    const [rows, fields] = await connection.query(sql, [token, userId, expires]);
+    return new UserToken(token, userId, expires);
 }
 
-export function remove(token, cb) {
+export async function remove(token) {
     const sql = 'DELETE FROM user_tokens WHERE token = ?';
-    connection.query(sql, [token], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to remove token!';
-        }
-        cb();
-    });
+    const [rows, fields] = await connection.query(sql, [token]);
+    return rows.affectedRows > 0;
 }

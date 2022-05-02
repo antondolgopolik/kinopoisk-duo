@@ -1,32 +1,23 @@
 import {connection} from '../db_helper.mjs';
 import {WatchTogetherRequest} from "../../entity/watch_together_request.mjs";
 
-export function create(movieId, userId, is_active, cb) {
+export async function create(movieId, userId, isActive) {
     const sql = 'INSERT INTO watch_together_requests (movie_id, user_id, is_active) VALUES (?, ?, ?)';
-    connection.query(sql, [movieId, userId, is_active], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to insert new watch together request!';
-        }
-        cb(new WatchTogetherRequest(movieId, userId, is_active));
-    });
+    const [rows, fields] = await connection.query(sql, [movieId, userId, isActive]);
+    return new WatchTogetherRequest(movieId, userId, isActive);
 }
 
-export function readForUser(userId, movieId, cb) {
+export async function readForUser(userId, movieId) {
     const sql = 'SELECT * FROM watch_together_requests WHERE user_id = ? AND movie_id = ?';
-    connection.query(sql, [userId, movieId], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to select watch together request!';
-        }
-        if ((typeof results !== 'undefined') && (results.length > 0)) {
-            const row = results[0];
-            cb(rowToWatchTogetherRequest(row));
-        } else {
-            cb(null);
-        }
-    });
+    const [rows, fields] = await connection.query(sql, [userId, movieId]);
+    if (rows.length > 0) {
+        return rowToWatchTogetherRequest(rows[0]);
+    } else {
+        return null;
+    }
 }
 
-export function readAvailableForUser(userId, movieId, cb) {
+export async function readAvailableForUser(userId, movieId) {
     const sql = `SELECT wtr.*
                  FROM watch_together_requests wtr
                  WHERE wtr.movie_id = ?
@@ -35,61 +26,38 @@ export function readAvailableForUser(userId, movieId, cb) {
                           (SELECT ignore_user_id FROM watch_together_request_ignores wtri WHERE wtri.movie_id = ? AND wtri.user_id = ?)
                       AND wtr.is_active = true
                  LIMIT 1`;
-    connection.query(sql, [movieId, userId, movieId, userId], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to select watch together requests!';
-        }
-        if ((typeof results !== 'undefined') && (results.length > 0)) {
-            const row = results[0];
-            cb(rowToWatchTogetherRequest(row));
-        } else {
-            cb(null);
-        }
-    });
-}
-
-export function readAllForUser(userId, cb) {
-    const sql = 'SELECT * FROM watch_together_requests WHERE user_id = ?';
-    connection.query(sql, [userId], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to select watch together requests!';
-        }
-        cb(resultsToWatchTogetherRequests(results));
-    });
-}
-
-function resultsToWatchTogetherRequests(results) {
-    if ((typeof results !== 'undefined') && (results.length > 0)) {
-        const watchTogetherRequests = [];
-        results.forEach((row) => {
-            watchTogetherRequests.push(rowToWatchTogetherRequest(row));
-        });
-        return watchTogetherRequests;
+    const [rows, fields] = await connection.query(sql, [movieId, userId, movieId, userId]);
+    if (rows.length > 0) {
+        return rowToWatchTogetherRequest(rows[0]);
     } else {
-        return [];
+        return null;
     }
+}
+
+export async function readAllForUser(userId) {
+    const sql = 'SELECT * FROM watch_together_requests WHERE user_id = ?';
+    const [rows, fields] = await connection.query(sql, [userId]);
+    return rowsToWatchTogetherRequests(rows);
+}
+
+function rowsToWatchTogetherRequests(rows) {
+    const watchTogetherRequests = [];
+    rows.forEach((row) => {
+        watchTogetherRequests.push(rowToWatchTogetherRequest(row));
+    });
+    return watchTogetherRequests;
 }
 
 function rowToWatchTogetherRequest(row) {
     return new WatchTogetherRequest(row.movie_id, row.user_id, row.is_active);
 }
 
-export function update(watchTogetherRequest, cb) {
+export async function update(wtr) {
     const sql = 'UPDATE watch_together_requests SET is_active = ? WHERE movie_id = ? AND user_id = ?';
-    connection.query(sql, [watchTogetherRequest.isActive, watchTogetherRequest.movieId, watchTogetherRequest.userId], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to update watch together request!';
-        }
-        cb();
-    });
+    const [rows, fields] = await connection.query(sql, [wtr.isActive, wtr.movieId, wtr.userId]);
 }
 
-export function remove(userId, movieId, cb) {
+export async function remove(userId, movieId) {
     const sql = 'DELETE FROM watch_together_requests WHERE user_id = ? AND movie_id = ?';
-    connection.query(sql, [userId, movieId], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to remove watch together request!';
-        }
-        cb();
-    });
+    const [rows, fields] = await connection.query(sql, [userId, movieId]);
 }

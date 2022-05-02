@@ -1,30 +1,22 @@
 import {connection} from '../db_helper.mjs';
 import {MovieCast} from "../../entity/movie_cast.mjs";
 
-export function readAllForMovie(movieId, cb) {
+export async function readAllForMovie(movieId) {
     const sql = `select *
                  from movie_casts
                         join persons p on movie_casts.person_id = p.person_id
                         join genders g on movie_casts.gender_id = g.gender_id
                  where movie_id = ?`;
-    connection.query(sql, [movieId], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to select movie casts!';
-        }
-        cb(resultsToMovieCasts(results));
-    });
+    const [rows, fields] = await connection.query(sql, [movieId]);
+    return rowsToMovieCasts(rows);
 }
 
-function resultsToMovieCasts(results) {
-    if ((typeof results !== 'undefined') && (results.length > 0)) {
-        const movieCasts = [];
-        results.forEach((row) => {
-            movieCasts.push(rowToMovieCast(row));
-        });
-        return movieCasts;
-    } else {
-        return [];
-    }
+function rowsToMovieCasts(results) {
+    const movieCasts = [];
+    results.forEach((row) => {
+        movieCasts.push(rowToMovieCast(row));
+    });
+    return movieCasts;
 }
 
 function rowToMovieCast(row) {

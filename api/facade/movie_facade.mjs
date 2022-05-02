@@ -9,82 +9,63 @@ import {MovieDetailsPageData} from "../dto/movie_details_data.mjs";
 
 const pageSize = 10;
 
-export function getMovieDetailsPageData(token, movieId, cb) {
-    // Проверка наличия токена
+export async function getMovieDetailsPageData(token, movieId) {
     if (token !== undefined) {
-        // Чтение пользователя по токену
-        UserService.getUserByTokenWithExpireCheck(token, (user) => {
-            if (user !== null) {
-                getMovieDetailsPageDataWithUser(user, movieId, cb);
-            } else {
-                getMovieDetailsPageDataWithoutUser(movieId, cb);
-            }
-        });
+        const user = await UserService.getUserByTokenWithExpireCheck(token);
+        if (user !== null) {
+            return getMovieDetailsPageDataWithUser(user, movieId);
+        } else {
+            return getMovieDetailsPageDataWithoutUser(movieId);
+        }
     } else {
-        getMovieDetailsPageDataWithoutUser(movieId, cb);
+        return getMovieDetailsPageDataWithoutUser(movieId);
     }
 }
 
-function getMovieDetailsPageDataWithUser(user, movieId, cb) {
-    // Чтение фильма
-    MovieService.getMovie(movieId, (movie) => {
-        // Проверка наличия фильма
-        if (movie !== null) {
-            // Чтение запроса для фильма у пользователя
-            WatchTogetherRequestService.getWatchTogetherRequestForUser(user.userId, movieId, (watchTogetherRequest) => {
-                getMovieDetailsPageDataComplete(
-                    movie, watchTogetherRequest !== null, movieId, cb
-                );
-            });
-        } else {
-            cb(null);
-        }
-    });
+async function getMovieDetailsPageDataWithUser(user, movieId) {
+    const movie = await MovieService.getMovie(movieId);
+    if (movie !== null) {
+        const wtr = await WatchTogetherRequestService.getWatchTogetherRequestForUser(user.userId, movieId);
+        return getMovieDetailsPageDataComplete(movie, wtr !== null, movieId);
+    } else {
+        return null;
+    }
 }
 
-function getMovieDetailsPageDataWithoutUser(movieId, cb) {
-    // Чтение фильма
-    MovieService.getMovie(movieId, (movie) => {
-        // Проверка наличия фильма
-        if (movie !== null) {
-            // Чтение запроса для фильма у пользователя
-            getMovieDetailsPageDataComplete(movie, undefined, movieId, cb);
-        } else {
-            cb(null);
-        }
-    });
+async function getMovieDetailsPageDataWithoutUser(movieId) {
+    const movie = await MovieService.getMovie(movieId);
+    if (movie !== null) {
+        return getMovieDetailsPageDataComplete(movie, undefined, movieId)
+    } else {
+        return null;
+    }
 }
 
-function getMovieDetailsPageDataComplete(movie, isWatchTogetherRequested, movieId, cb) {
-    GenreService.readGenresForMovie(movieId, (genres) => {
-        MovieCastService.readMovieCastsForMovie(movieId, (movieCasts) => {
-            cb(toMovieDetailsPageData(movie, isWatchTogetherRequested, genres, movieCasts));
-        });
-    });
+async function getMovieDetailsPageDataComplete(movie, isWatchTogetherRequested, movieId) {
+    const genresPromise = GenreService.readGenresForMovie(movieId);
+    const movieCastsPromise = MovieCastService.readMovieCastsForMovie(movieId);
+    const [genres, movieCasts] = await Promise.all([genresPromise, movieCastsPromise]);
+    movie.genres = genres;
+    movie.movieCasts = movieCasts;
+    return toMovieDetailsPageData(movie, isWatchTogetherRequested, undefined, undefined);
 }
 
 function toMovieDetailsPageData(movie, isWatchTogetherRequested, genres, movieCasts) {
     return new MovieDetailsPageData(movie, isWatchTogetherRequested, genres, movieCasts);
 }
 
-export function getMoviePageData(page, cb) {
-    // Кол-во страниц
-    MovieService.countMovies((movieCount) => {
-        // Фильмы
-        MovieService.getMovies(page, (movies) => {
-            cb(toMoviePageData(movieCount, movies));
-        });
-    });
+export async function getMoviePageData(page) {
+    const movieCountPromise = MovieService.countMovies();
+    const moviesPromise = MovieService.getMovies(page);
+    const [movieCount, movies] = await Promise.all([movieCountPromise, moviesPromise]);
+    return toMoviePageData(movieCount, movies);
 }
 
-export function searchMoviePageData(q, page, cb) {
-    // Кол-во страниц
-    MovieService.countWithTitle(q, (movieCount) => {
-        // Фильмы
-        MovieService.searchMovies(q, page, (movies) => {
-            cb(toMoviePageData(movieCount, movies));
-        });
-    });
+export async function searchMoviePageData(q, page) {
+    const movieCountPromise = MovieService.countWithTitle(q);
+    const moviesPromise = MovieService.searchMovies(q, page);
+    const [movieCount, movies] = await Promise.all([movieCountPromise, moviesPromise]);
+    return toMoviePageData(movieCount, movies);
 }
 
 function toMoviePageData(movieCount, movies) {
@@ -94,7 +75,7 @@ function toMoviePageData(movieCount, movies) {
     const moviePageItemsData = [];
     movies.forEach((movie) => {
         moviePageItemsData.push(new MoviePageItemData(
-            movie.title, movie.overview,
+            movie.movieId, movie.title, movie.overview,
             movie.movieStatus, movie.voteAverage
         ));
     });

@@ -1,31 +1,21 @@
 import * as MovieDao from '../datasource/dao/movie_dao.mjs';
 
-export function getMovie(movieId, cb) {
-    MovieDao.readById(movieId, (movie) => {
-        cb(movie);
-    });
+export async function getMovie(movieId) {
+    return await MovieDao.readById(movieId);
 }
 
-export function getMovies(page, cb) {
-    MovieDao.readWithPage(page, (movies) => {
-        cb(movies);
-    });
+export async function getMovies(page) {
+    return MovieDao.readWithPage(page);
 }
 
-export function searchMovies(q, page, cb) {
-    MovieDao.searchByTitleWithPage(q, page, (movies) => {
-        cb(movies);
-    });
+export async function searchMovies(q, page) {
+    return MovieDao.searchByTitleWithPage(q, page);
 }
 
-export function countMovies(cb) {
-    MovieDao.count((movieCount) => {
-        cb(movieCount);
-    });
+export async function countMovies() {
+    return MovieDao.count();
 }
 
-export function countWithTitle(title, cb) {
-    MovieDao.countWithTitle(title, (movieCount) => {
-        cb(movieCount);
-    });
+export async function countWithTitle(title) {
+    return MovieDao.countWithTitle(title);
 }

@@ -3,75 +3,48 @@ import {Movie} from "../../entity/movie.mjs";
 
 const pageSize = 10;
 
-export function readById(movieId, cb) {
+export async function readById(movieId) {
     const sql = 'SELECT * FROM movies WHERE movie_id = ?';
-    connection.query(sql, [movieId], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to select movie!';
-        }
-        // Проверка наличия
-        if ((typeof results !== 'undefined') && (results.length > 0)) {
-            const row = results[0];
-            cb(rowToMovie(row));
-        } else {
-            cb(null);
-        }
-    });
+    const [rows, fields] = await connection.query(sql, [movieId]);
+    if (rows.length > 0) {
+        return rowToMovie(rows[0]);
+    } else {
+        return null;
+    }
 }
 
-export function readWithPage(page, cb) {
+export async function readWithPage(page) {
     const offset = pageSize * page;
     const sql = 'SELECT * FROM movies LIMIT ? OFFSET ?';
-    connection.query(sql, [pageSize, offset], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to select movies!';
-        }
-        cb(resultsToMovies(results));
-    });
+    const [rows, fields] = connection.query(sql, [pageSize, offset]);
+    return rowsToMovies(rows);
 }
 
-export function searchByTitleWithPage(q, page, cb) {
+export async function searchByTitleWithPage(q, page) {
     const offset = pageSize * page;
     const sql = 'SELECT * FROM movies WHERE MATCH(title) AGAINST(? IN NATURAL LANGUAGE MODE) LIMIT ? OFFSET ?';
-    connection.query(sql, [q, pageSize, offset], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to select movies!';
-        }
-        // Проверка наличия
-        cb(resultsToMovies(results));
-    });
+    const [rows, fields] = await connection.query(sql, [q, pageSize, offset]);
+    return rowsToMovies(rows);
 }
 
-export function count(cb) {
+export async function count() {
     const sql = "SELECT COUNT(*) FROM movies";
-    connection.query(sql, [], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to count movies!';
-        }
-        cb(results[0]['COUNT(*)']);
-    });
+    const [rows, fields] = await connection.query(sql, []);
+    return rows[0]['COUNT(*)'];
 }
 
-export function countWithTitle(title, cb) {
+export async function countWithTitle(title) {
     const sql = "SELECT COUNT(*) FROM movies WHERE MATCH(title) AGAINST(? IN NATURAL LANGUAGE MODE)";
-    connection.query(sql, [title], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to count movies!';
-        }
-        cb(results[0]['COUNT(*)']);
-    });
+    const [rows, fields] = await connection.query(sql, [title]);
+    return rows[0]['COUNT(*)'];
 }
 
-function resultsToMovies(results) {
-    if ((typeof results !== 'undefined') && (results.length > 0)) {
-        const movies = [];
-        results.forEach((row) => {
-            movies.push(rowToMovie(row));
-        });
-        return movies;
-    } else {
-        return [];
-    }
+function rowsToMovies(results) {
+    const movies = [];
+    results.forEach((row) => {
+        movies.push(rowToMovie(row));
+    });
+    return movies;
 }
 
 function rowToMovie(row) {

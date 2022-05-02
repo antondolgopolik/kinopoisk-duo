@@ -4,90 +4,70 @@ import {UserToken} from "../../entity/user_token.mjs";
 
 const pageSize = 10;
 
-export function create(username, hashedPassword, tgId, cb) {
+export async function create(username, hashedPassword, tgId) {
     const sql = 'INSERT INTO users (username, hashed_password, tg_id) VALUES (?, ?, ?)';
-    connection.query(sql, [username, hashedPassword, tgId], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to insert new user!';
-        }
-        cb(new User(results.insertId, username, hashedPassword, tgId));
-    });
+    try {
+        const [rows, fields] = await connection.query(sql, [username, hashedPassword, tgId]);
+        return new User(rows.insertId, username, hashedPassword, tgId);
+    } catch (err) {
+        console.log('Failed to create new user!');
+        return null;
+    }
 }
 
-export function readByUserId(userId, cb) {
+export async function readByUserId(userId) {
     const sql = 'SELECT * FROM users WHERE user_id = ?';
-    connection.query(sql, [userId], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to select user!';
-        }
-        cb(resultsToUser(results));
-    });
+    const [rows, fields] = await connection.query(sql, [userId]);
+    return rowsToUser(rows);
 }
 
-export function readByUsername(username, cb) {
+export async function readByUsername(username) {
     const sql = 'SELECT * FROM users WHERE username = ?';
-    connection.query(sql, [username], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to select user!'
-        }
-        cb(resultsToUser(results));
-    });
+    const [rows, fields] = await connection.query(sql, [username]);
+    return rowsToUser(rows);
 }
 
-function resultsToUser(results) {
-    if ((typeof results !== 'undefined') && (results.length > 0)) {
-        return rowToUser(results[0]);
+function rowsToUser(rows) {
+    if (rows.length > 0) {
+        return rowToUser(rows[0]);
     } else {
         return null;
     }
 }
 
-export function readWithPage(page, cb) {
+export async function readWithPage(page) {
     const offset = pageSize * page;
     const sql = 'SELECT * FROM users LIMIT ? OFFSET ?';
-    connection.query(sql, [pageSize, offset], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to select users!';
-        }
-        cb(resultsToUsers(results));
+    const [rows, fields] = await connection.query(sql, [pageSize, offset]);
+    return rowsToUsers(rows);
+}
+
+function rowsToUsers(rows) {
+    const users = [];
+    rows.forEach((row) => {
+        users.push(rowToUser(row));
     });
+    return users;
 }
 
-function resultsToUsers(results) {
-    if ((typeof results !== 'undefined') && (results.length > 0)) {
-        const users = [];
-        results.forEach((row) => {
-            users.push(rowToUser(row));
-        });
-        return users;
-    } else {
-        return [];
-    }
-}
-
-export function count(cb) {
+export async function count() {
     const sql = "SELECT COUNT(*) FROM users";
-    connection.query(sql, [], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to count users!';
-        }
-        cb(results[0]['COUNT(*)']);
-    });
+    const [rows, fields] = await connection.query(sql, []);
+    return rows[0]['COUNT(*)'];
 }
 
-export function readByToken(token, cb) {
+export async function readByToken(token) {
     const sql = 'SELECT * FROM users JOIN user_tokens WHERE token = ?';
-    connection.query(sql, [token], (err, results, fields) => {
-        if (err) {
-            throw 'Failed to select user!'
-        }
-        if ((typeof results !== 'undefined') && (results.length > 0)) {
-            const row = results[0];
-            cb(rowToUser(row), rowToUserToken(row));
-        } else {
-            cb(null, null);
-        }
-    });
+    const [rows, fields] = await connection.query(sql, [token]);
+    if (rows.length > 0) {
+        const row = rows[0];
+        return {
+            user: rowToUser(row),
+            userToken: rowToUserToken(row)
+        };
+    } else {
+        return null;
+    }
 }
 
 function rowToUser(row) {

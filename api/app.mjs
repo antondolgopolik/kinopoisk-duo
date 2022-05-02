@@ -7,7 +7,7 @@ import cors from 'cors';
 // Фильтры
 import * as AuthTokenFilter from './filter/auth_token_filter.mjs';
 
-// Контроллеры
+// Контроллеры API
 import * as RegistrationController from './route/registration_controller.mjs'
 import * as LoginController from './route/login_controller.mjs';
 import * as LogoutController from './route/logout_controller.mjs';
@@ -18,14 +18,18 @@ import * as WatchTogetherRequestController from './route/watch_together_request_
 
 export const app = express();
 
+app.disable('etag');
+
 app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 
+// Фильтр
 app.use(AuthTokenFilter.extractAuthToken);
 
+// API
 app.use('/api/registration', RegistrationController.router);
 app.use('/api/login', LoginController.router);
 app.use('/api/logout', LogoutController.router)
