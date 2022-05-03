@@ -1,9 +1,11 @@
 import * as TgCodeService from '../service/tg_code_service.mjs';
 import * as UserService from '../service/user_service.mjs';
 import * as WatchTogetherRequestService from '../service/watch_together_request_service.mjs';
+import * as MovieService from '../service/movie_service.mjs';
 import {UserData} from "../dto/user_data.mjs";
 import {UserProfilePageData} from "../dto/user_profile_page_data.mjs";
 import {UserPageData} from "../dto/user_page_data.mjs";
+import {WatchTogetherRequestData} from "../dto/watch_together_request_data.mjs";
 
 const pageSize = 10;
 
@@ -57,6 +59,19 @@ export async function getUserProfilePageData(username) {
     }
 }
 
-function toUserProfilePageData(user, watchTogetherRequests) {
-    return new UserProfilePageData(toUserData(user), watchTogetherRequests);
+async function toUserProfilePageData(user, wtrs) {
+    return new UserProfilePageData(toUserData(user), await toWatchTogetherRequestsData(wtrs));
+}
+
+async function toWatchTogetherRequestsData(wtrs) {
+    const wtrDataPromises = [];
+    wtrs.forEach((wtr) => {
+        wtrDataPromises.push(toWatchTogetherRequestData(wtr));
+    });
+    return Promise.all(wtrDataPromises);
+}
+
+async function toWatchTogetherRequestData(wtr) {
+    const movie = await MovieService.getMovie(wtr.movieId);
+    return new WatchTogetherRequestData(wtr.movieId, movie.title, wtr.userId, wtr.isActive);
 }

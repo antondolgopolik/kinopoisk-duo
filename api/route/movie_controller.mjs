@@ -18,7 +18,7 @@ async function getMovieDetailsPageData(req, res, next) {
 
 async function getMoviePageData(req, res, next) {
     const q = req.query.q;
-    const page = req.query.page !== undefined ? parseInt(req.query.page) : 0;
+    const page = req.query.page !== undefined ? req.query.page : 0;
     if (q !== undefined) {
         res.json(await MovieFacade.searchMoviePageData(q, page));
     } else {
