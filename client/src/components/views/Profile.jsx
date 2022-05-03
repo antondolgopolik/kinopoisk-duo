@@ -12,32 +12,31 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import InboxIcon from '@mui/icons-material/Inbox';
 import DraftsIcon from '@mui/icons-material/Drafts';
-import ClipLoader from "react-spinners/ClipLoader";
-import {Typography} from "@mui/material";
+import {Grid, Typography} from "@mui/material";
 
 
-function animeList(cartAnimeList) {
+function animeList(watchTogetherRequests) {
     return (
-        cartAnimeList.map(cartAnime => (
+        watchTogetherRequests.map(request => (
             <ListItem disablePadding>
                 <ListItemText>
-                    <Typography component={Link} to={'../anime/' + cartAnime.anime.slug}>
-                        {cartAnime.anime.name_rus}
+                    <Typography component={Link} to={'../anime/' + request.anime.slug}>
+                        {request.anime.name_rus}
                     </Typography>
                 </ListItemText>
                 <ListItemText>
                     <Typography>
-                        {cartAnime.view_status}
+                        {request.view_status}
                     </Typography>
                 </ListItemText>
                 <ListItemText>
                     <Typography>
-                        {cartAnime.number_of_episodes_watched} / {cartAnime.anime.number_of_episodes}
+                        {request.number_of_episodes_watched} / {request.anime.number_of_episodes}
                     </Typography>
                 </ListItemText>
                 <ListItemText>
                     <Typography>
-                        {cartAnime.rating ? cartAnime.rating : 0} / 10
+                        {request.rating ? request.rating : 0} / 10
                     </Typography>
                 </ListItemText>
             </ListItem>
@@ -56,12 +55,17 @@ export default function Profile() {
     }, [dispatch, username]);
 
     return (
-        <Box sx={{width: '100%', maxWidth: 700, bgcolor: 'background.paper'}}>
+        profile !== null ?
+            <Box sx={{width: '100%', maxWidth: 700, bgcolor: 'background.paper'}}>
 
-            <List>
-                {profile ? animeList(profile.cart_anime) : <ClipLoader color="#000000" size={150}/>}
-            </List>
-
-        </Box>
+                <Grid item xs={12}>
+                    <Typography variant="h4">{profile.userData.username}</Typography>
+                    <Typography variant="h4">TG id: {profile.userData.tgId}</Typography>
+                </Grid>
+{/*
+                <List>
+                    {profile ? animeList(profile.watchTogetherRequests) : <Typography>Loading</Typography>}
+                </List>*/}
+            </Box> : <Typography>Loading</Typography>
     )
 }
