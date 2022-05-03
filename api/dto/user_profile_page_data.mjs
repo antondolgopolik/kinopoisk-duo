@@ -1,6 +1,6 @@
 export class UserProfilePageData {
-    constructor(userData, watchTogetherRequests) {
+    constructor(userData, watchTogetherRequestsData) {
         this.userData = userData;
-        this.watchTogetherRequests = watchTogetherRequests;
+        this.watchTogetherRequestsData = watchTogetherRequestsData;
     }
 }
