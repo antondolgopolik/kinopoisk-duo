@@ -16,7 +16,7 @@ export async function readById(movieId) {
 export async function readWithPage(page) {
     const offset = pageSize * page;
     const sql = 'SELECT * FROM movies LIMIT ? OFFSET ?';
-    const [rows, fields] = connection.query(sql, [pageSize, offset]);
+    const [rows, fields] = await connection.query(sql, [pageSize, offset]);
     return rowsToMovies(rows);
 }
 

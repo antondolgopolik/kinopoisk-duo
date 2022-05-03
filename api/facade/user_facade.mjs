@@ -27,6 +27,15 @@ export async function getUserDataByToken(token) {
     }
 }
 
+export async function getUserDataByUserId(userId) {
+    const user = await UserService.getUserByUserId(userId);
+    if (user !== null) {
+        return toUserData(user);
+    } else {
+        return null;
+    }
+}
+
 function toUserData(user) {
     return new UserData(user.userId, user.username, user.tgId);
 }
