@@ -1,12 +1,12 @@
 import {combineReducers} from 'redux';
-import anime from './anime'
-import cartAnime from './cartAnime'
+import movie from './movie'
 import auth from './auth'
 import profile from './profile'
+import users from "./users";
 
 export default combineReducers({
-    anime,
-    cartAnime,
+    movie,
     auth,
     profile,
+    users
 })

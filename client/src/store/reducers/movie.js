@@ -1,20 +1,20 @@
-import {GET_ANIME_BY_SLUG, GET_ANIME_LIST} from "../actions/types.js"
+import {GET_MOVIE_BY_ID, GET_MOVIE_LIST} from "../actions/types.js"
 
 const initialState = {
-    anime: [],
+    movie: [],
 };
 
 export default function (state = initialState, action) {
     switch (action.type) {
-        case GET_ANIME_LIST:
+        case GET_MOVIE_LIST:
             return {
                 ...state,
-                anime: action.payload
+                movie: action.payload
             };
-        case GET_ANIME_BY_SLUG:
+        case GET_MOVIE_BY_ID:
             return {
                 ...state,
-                anime: action.payload
+                movie: action.payload
             };
         default:
             return state;
