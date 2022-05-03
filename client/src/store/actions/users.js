@@ -1,14 +1,14 @@
 import axios from "axios";
-import {GET_PROFILE} from "./types";
+import {GET_USERS} from "./types";
 
 
 const API_URL = 'http://localhost:9000/api/'
-export const getProfile = username => dispatch => {
+export const getUserList = () => dispatch => {
     axios
-        .get(API_URL + 'profile/' + username)
+        .get(API_URL + 'users')
         .then(res => {
             dispatch({
-                type: GET_PROFILE,
+                type: GET_USERS,
                 payload: res.data
             });
         })

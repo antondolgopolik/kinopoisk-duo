@@ -1,8 +1,5 @@
-export const GET_ANIME_LIST = 'GET_ANIME';
-export const GET_ANIME_BY_SLUG = 'GET_ANIME_BY_SLUG';
-
-export const GET_CART_ANIME = 'GET_CART_ANIME';
-export const CLEAR_CART_ANIME = 'CLEAR_CART_ANIME';
+export const GET_MOVIE_LIST = 'GET_MOVIE_LIST';
+export const GET_MOVIE_BY_ID = 'GET_MOVIE_BY_ID';
 
 export const USER_LOADING = 'USER_LOADING';
 export const USER_LOADED = 'USER_LOADED';
@@ -14,3 +11,5 @@ export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
 export const REGISTER_FAIL = 'REGISTER_FAIL';
 
 export const GET_PROFILE = 'GET_PROFILE';
+
+export const GET_USERS = 'GET_USERS';
