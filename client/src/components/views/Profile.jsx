@@ -1,43 +1,39 @@
 import {Link, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {useEffect} from "react";
 import * as React from "react";
+import {useEffect} from "react";
 import {getProfile} from "../../store/actions/profile";
-import Box from '@mui/material/Box';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';
-import InboxIcon from '@mui/icons-material/Inbox';
-import DraftsIcon from '@mui/icons-material/Drafts';
-import {Grid, Typography} from "@mui/material";
+import {Box, Button, Grid, List, ListItem, ListItemText, Typography} from "@mui/material";
+import {deleteRequest} from "../../store/actions/request";
 
+const map = {
+    1: "Активный",
+    2: "На паузе"
+}
 
-function animeList(watchTogetherRequests) {
+function getWatchTogether(movies, username, dispatch) {
+    const handler = (movieId) => event => {
+        event.preventDefault();
+        dispatch(deleteRequest(movieId, username))
+
+    }
     return (
-        watchTogetherRequests.map(request => (
+        movies.map(movie => (
             <ListItem disablePadding>
                 <ListItemText>
-                    <Typography component={Link} to={'../anime/' + request.anime.slug}>
-                        {request.anime.name_rus}
+                    <Typography component={Link} to={'../movies/' + movie.movieId}>
+                        {movie.movieTitle}
                     </Typography>
                 </ListItemText>
                 <ListItemText>
                     <Typography>
-                        {request.view_status}
+                        {map[movie.isActive]}
                     </Typography>
                 </ListItemText>
                 <ListItemText>
-                    <Typography>
-                        {request.number_of_episodes_watched} / {request.anime.number_of_episodes}
-                    </Typography>
-                </ListItemText>
-                <ListItemText>
-                    <Typography>
-                        {request.rating ? request.rating : 0} / 10
-                    </Typography>
+                    <Button onClick={handler(movie.movieId)}>
+                        Удалить
+                    </Button>
                 </ListItemText>
             </ListItem>
         ))
@@ -62,10 +58,10 @@ export default function Profile() {
                     <Typography variant="h4">{profile.userData.username}</Typography>
                     <Typography variant="h4">TG id: {profile.userData.tgId}</Typography>
                 </Grid>
-{/*
+
                 <List>
-                    {profile ? animeList(profile.watchTogetherRequests) : <Typography>Loading</Typography>}
-                </List>*/}
+                    {profile ? getWatchTogether(profile.watchTogetherRequestsData, username, dispatch) : <Typography>Loading</Typography>}
+                </List>
             </Box> : <Typography>Loading</Typography>
     )
 }

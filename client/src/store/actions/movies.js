@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {GET_MOVIE_BY_ID, GET_MOVIE_LIST} from './types';
+import {tokenConfig} from "./auth";
 
 const API_URL = 'http://localhost:9000/api/';
 //GET_MOVIE_LIST
@@ -16,9 +17,9 @@ export const getMovieList = () => dispatch => {
 };
 
 //GET_MOVIE_BY_ID
-export const getMovieById = (movie_id) => dispatch => {
+export const getMovieById = movie_id => (dispatch, getState) => {
     axios
-        .get(API_URL + 'movies/'+ movie_id)
+        .get(API_URL + 'movies/' + movie_id, tokenConfig(getState))
         .then(res => {
             dispatch({
                 type: GET_MOVIE_BY_ID,

@@ -39,7 +39,7 @@ function authLinks(isLoading, user, handle) {
         user ?
             <>
                 <Box mr={3}>
-                    <Typography component={Link} to={"/" + user.username} variant="h6">{user.nickname}</Typography>
+                    <Typography component={Link} to={"/" + user.username} variant="h6">{user.username}</Typography>
                 </Box>
                 <Button onClick={handle} color="secondary" variant="contained">Logout</Button>
             </> : <Typography>Loading</Typography>

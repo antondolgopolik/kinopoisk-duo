@@ -1,4 +1,4 @@
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {useEffect, useState} from "react";
 import {getMovieById} from "../../store/actions/movies";
@@ -15,18 +15,25 @@ import DraftsIcon from '@mui/icons-material/Drafts';
 import SendIcon from '@mui/icons-material/Send';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import {logout} from "../../store/actions/auth";
+import {createRequest} from "../../store/actions/request";
 
 export default function MovieDetail() {
     const {movie_id} = useParams()
     const movie = useSelector(state => state.movie.movie)
     const dispatch = useDispatch()
 
+    const handler = (event) => {
+        event.preventDefault();
+        dispatch(createRequest(movie_id))
+    };
+
     useEffect(() => {
         dispatch(getMovieById(movie_id))
     }, [dispatch, movie_id]);
 
     return (
-        !Array.isArray(movie) ?
+        !Array.isArray(movie.items) ?
             <Grid container spacing={2} mt={5}>
                 <Grid item xs={12}>
                     <Typography variant="h4">{movie.title}</Typography>
@@ -48,6 +55,7 @@ export default function MovieDetail() {
                     <Typography>Описание:</Typography>
                     <Typography>{movie.overview}</Typography>
                 </Grid>
+                <Button onClick={handler} variant="contained" size="small">Подробнее</Button>
             </Grid> : <Typography>Loading</Typography>
     )
 }

@@ -13,3 +13,5 @@ export const REGISTER_FAIL = 'REGISTER_FAIL';
 export const GET_PROFILE = 'GET_PROFILE';
 
 export const GET_USERS = 'GET_USERS';
+
+export const REQUEST_CREATED = 'REQUEST_CREATED';

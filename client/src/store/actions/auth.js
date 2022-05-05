@@ -89,7 +89,6 @@ export const register = (username, password, tg_code) => (dispatch) => {
 
 // LOGOUT USER
 export const logout = () => (dispatch, getState) => {
-    console.log(tokenConfig(getState))
     axios
         .delete(API_URL + 'logout', tokenConfig(getState))
         .then((res) => {
@@ -110,7 +109,6 @@ export const tokenConfig = (getState) => {
     // Headers
     const config = {
         headers: {
-            'Content-Type': 'application/json',
         },
     };
 

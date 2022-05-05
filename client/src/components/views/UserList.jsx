@@ -33,13 +33,13 @@ function getUserTable(users) {
 }
 
 export default function UserList() {
-    const userList = useSelector(state => state.users.profile)
+    const userList = useSelector(state => state.users.users)
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch(getUserList())
     }, [dispatch])
     return (
-        !Array.isArray(userList) ?
+        (userList && Array.isArray(userList.items)) ?
             getUserTable(userList.items) : <Typography>Loading</Typography>
     )
 }

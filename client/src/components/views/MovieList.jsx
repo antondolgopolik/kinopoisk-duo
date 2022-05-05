@@ -15,7 +15,7 @@ export default function MovieList() {
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
     const dispatch = useDispatch()
     useEffect(() => {
-        // dispatch(getMovieList())
+        dispatch(getMovieList())
     }, [dispatch, isAuthenticated])
     return (
         Array.isArray(movieList) ?
@@ -38,7 +38,7 @@ export default function MovieList() {
                                 </Typography>
                             </CardContent>
                             <CardActions>
-                                <Button component={Link} to={'movies/5' } variant="contained"
+                                <Button component={Link} to={'movies/' + movie.movieId} variant="contained"
                                         size="small">Подробнее</Button>
                             </CardActions>
                         </Card>

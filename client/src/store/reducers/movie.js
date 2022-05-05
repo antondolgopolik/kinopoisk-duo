@@ -1,7 +1,7 @@
-import {GET_MOVIE_BY_ID, GET_MOVIE_LIST} from "../actions/types.js"
+import {GET_MOVIE_BY_ID, GET_MOVIE_LIST, REQUEST_CREATED} from "../actions/types.js"
 
 const initialState = {
-    movie: [],
+    movie: []
 };
 
 export default function (state = initialState, action) {
@@ -14,7 +14,12 @@ export default function (state = initialState, action) {
         case GET_MOVIE_BY_ID:
             return {
                 ...state,
-                movie: action.payload
+                movie: action.payload,
+            };
+        case REQUEST_CREATED:
+            return {
+                ...state,
+                movie: action.payload,
             };
         default:
             return state;
