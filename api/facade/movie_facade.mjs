@@ -7,7 +7,7 @@ import {MoviePageItemData} from "../dto/movie_page_item_data.mjs";
 import {MoviePageData} from "../dto/movie_page_data.mjs";
 import {MovieDetailsPageData} from "../dto/movie_details_data.mjs";
 
-const pageSize = 10;
+const pageSize = 9;
 
 export async function getMovieDetailsPageData(token, movieId) {
     if (token !== undefined) {

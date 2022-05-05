@@ -1,7 +1,7 @@
 import {connection} from '../db_helper.mjs';
 import {Movie} from "../../entity/movie.mjs";
 
-const pageSize = 10;
+const pageSize = 9;
 
 export async function readById(movieId) {
     const sql = 'SELECT * FROM movies WHERE movie_id = ?';
