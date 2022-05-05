@@ -47,7 +47,8 @@ async function getMovieDetailsPageDataComplete(movie, isWatchTogetherRequested, 
     const [genres, movieCasts] = await Promise.all([genresPromise, movieCastsPromise]);
     movie.genres = genres;
     movie.movieCasts = movieCasts;
-    return toMovieDetailsPageData(movie, isWatchTogetherRequested, undefined, undefined);
+    movie.isWatchTogetherRequested = isWatchTogetherRequested;
+    return toMovieDetailsPageData(movie, undefined, undefined, undefined);
 }
 
 function toMovieDetailsPageData(movie, isWatchTogetherRequested, genres, movieCasts) {
