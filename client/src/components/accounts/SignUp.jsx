@@ -11,17 +11,18 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Copyright from "../layout/Copyright";
+import {login, register} from "../../store/actions/auth";
+import {useDispatch} from "react-redux";
 
 
 export default function SignUp() {
+    const dispatch = useDispatch()
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         // eslint-disable-next-line no-console
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+
+        dispatch(register(data.get('username'), data.get('password'), data.get('tg_code')))
     };
 
     return (
@@ -42,35 +43,24 @@ export default function SignUp() {
                 </Typography>
                 <Box component="form" noValidate onSubmit={handleSubmit} sx={{mt: 3}}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                autoComplete="given-name"
-                                name="firstName"
-                                required
-                                fullWidth
-                                id="firstName"
-                                label="First Name"
-                                autoFocus
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12}>
                             <TextField
                                 required
                                 fullWidth
-                                id="lastName"
-                                label="Last Name"
-                                name="lastName"
-                                autoComplete="family-name"
+                                id="username"
+                                label="Username"
+                                name="username"
+                                autoComplete="username"
                             />
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
                                 required
                                 fullWidth
-                                id="email"
-                                label="Email Address"
-                                name="email"
-                                autoComplete="email"
+                                id="tg_code"
+                                label="Telegram code"
+                                name="tg_code"
+                                autoComplete="tg_code"
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -84,12 +74,6 @@ export default function SignUp() {
                                 autoComplete="new-password"
                             />
                         </Grid>
-                        <Grid item xs={12}>
-                            <FormControlLabel
-                                control={<Checkbox value="allowExtraEmails" color="primary"/>}
-                                label="I want to receive inspiration, marketing promotions and updates via email."
-                            />
-                        </Grid>
                     </Grid>
                     <Button
                         type="submit"
@@ -101,7 +85,7 @@ export default function SignUp() {
                     </Button>
                     <Grid container justifyContent="flex-end">
                         <Grid item>
-                            <Link href="#" variant="body2">
+                            <Link href="../signin" variant="body2">
                                 Already have an account? Sign in
                             </Link>
                         </Grid>
