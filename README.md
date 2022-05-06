@@ -1,2 +1,2 @@
-### Educational project
-Implemented by students of group 951006
+### НЕ educational project
+ПОЛНОЦЕННЫЙ КИНОПОИСК ДВА
