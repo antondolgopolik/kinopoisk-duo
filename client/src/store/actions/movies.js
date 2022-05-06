@@ -4,9 +4,16 @@ import {tokenConfig} from "./auth";
 
 const API_URL = 'http://localhost:9000/api/';
 //GET_MOVIE_LIST
-export const getMovieList = () => dispatch => {
+export const getMovieList = (query, page) => dispatch => {
+    let url = API_URL + 'movies?'
+    if (query) {
+        url += ('q=' + query + '&')
+    }
+    if (page) {
+        url += ('page=' + page)
+    }
     axios
-        .get(API_URL + 'movies')
+        .get(url)
         .then(res => {
             dispatch({
                 type: GET_MOVIE_LIST,
