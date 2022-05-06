@@ -8,19 +8,9 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {useEffect} from "react";
-import {getMovieList} from "../../store/actions/movies";
-import {login, logout} from "../../store/actions/auth";
 import * as React from "react";
-import {getUserList} from "../../store/actions/users";
+import {logout} from "../../store/actions/auth";
 
-
-const root = {
-    flexGrow: 1
-}
-const title = {
-    flexGrow: 1
-}
 
 function guestLinks() {
     return (
@@ -39,7 +29,8 @@ function authLinks(isLoading, user, handle) {
         user ?
             <>
                 <Box mr={3}>
-                    <Typography component={Link} to={"/" + user.username} variant="h6">{user.username}</Typography>
+                    <Typography style={{"color": "white"}} component={Link} to={"/" + user.username}
+                                variant="h6">{user.username}</Typography>
                 </Box>
                 <Button onClick={handle} color="secondary" variant="contained">Logout</Button>
             </> : <Typography>Loading</Typography>
@@ -68,8 +59,8 @@ export default function Menu() {
                                     component={Link} to="/">
                             <MenuIcon/>
                         </IconButton>
-                        <Typography variant="h6" className={title}>Shikimori</Typography>
-                        <Box ml="50%">
+                        <Typography variant="h6">Kinopoisk Duo</Typography>
+                        <Box ml="50%" mr={5}>
 
                             <Button component={Link} to="/users" color="inherit">User
                                 List</Button>

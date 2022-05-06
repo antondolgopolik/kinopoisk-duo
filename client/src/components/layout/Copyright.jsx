@@ -7,7 +7,7 @@ export default function Copyright() {
         <Typography variant="body2" color="text.secondary" align="center">
             {'Copyright © '}
             <Link color="inherit" href="http://localhost:3000/">
-                Shikimori
+                Kinopoisk Duo
             </Link>{' '}
             {new Date().getFullYear()}
             {'.'}
