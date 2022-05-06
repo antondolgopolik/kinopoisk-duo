@@ -1,14 +1,14 @@
 import axios from 'axios';
 
 import {
+    AUTH_ERROR,
+    LOGIN_FAIL,
+    LOGIN_SUCCESS,
+    LOGOUT_SUCCESS,
+    REGISTER_FAIL,
+    REGISTER_SUCCESS,
     USER_LOADED,
     USER_LOADING,
-    AUTH_ERROR,
-    LOGIN_SUCCESS,
-    LOGIN_FAIL,
-    LOGOUT_SUCCESS,
-    REGISTER_SUCCESS,
-    REGISTER_FAIL,
 } from './types';
 
 
@@ -27,7 +27,6 @@ export const loadUser = () => (dispatch, getState) => {
             });
         })
         .catch((err) => {
-            console.log(err)
             dispatch({
                 type: AUTH_ERROR,
             });
@@ -108,8 +107,7 @@ export const tokenConfig = (getState) => {
 
     // Headers
     const config = {
-        headers: {
-        },
+        headers: {},
     };
 
     // If token, add to headers config

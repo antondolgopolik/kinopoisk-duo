@@ -8,48 +8,59 @@ import {deleteRequest} from "../../store/actions/request";
 
 const map = {
     1: "Активный",
-    2: "На паузе"
+    0: "На паузе"
 }
 
-function getWatchTogether(movies, username, dispatch) {
-    const handler = (movieId) => event => {
-        event.preventDefault();
-        dispatch(deleteRequest(movieId, username))
-
-    }
-    return (
-        movies.map(movie => (
-            <ListItem disablePadding>
-                <ListItemText>
-                    <Typography component={Link} to={'../movies/' + movie.movieId}>
-                        {movie.movieTitle}
-                    </Typography>
-                </ListItemText>
-                <ListItemText>
-                    <Typography>
-                        {map[movie.isActive]}
-                    </Typography>
-                </ListItemText>
-                <ListItemText>
-                    <Button onClick={handler(movie.movieId)}>
-                        Удалить
-                    </Button>
-                </ListItemText>
-            </ListItem>
-        ))
-    )
-}
 
 export default function Profile() {
     const {username} = useParams()
 
     const profile = useSelector(state => state.profile.profile)
+    const user = useSelector(state => state.auth.user)
     const dispatch = useDispatch()
 
     useEffect(() => {
         dispatch(getProfile(username))
     }, [dispatch, username]);
 
+    const handle = movieId => event => {
+        event.preventDefault();
+        dispatch(deleteRequest(movieId, profile.userData.username))
+    }
+    const getButton = (movieId) => {
+        if (user && user.username === profile.userData.username) {
+            return (
+                <ListItemText>
+                    <Button onClick={handle(movieId)}>
+                        Удалить
+                    </Button>
+                </ListItemText>
+            )
+
+        } else {
+            return <></>
+        }
+    }
+    const getList = () => {
+        return (
+            profile.watchTogetherRequestsData.map(movie => (
+                    <ListItem disablePadding key={movie.movieId}>
+                        <ListItemText>
+                            <Typography component={Link} to={'../movies/' + movie.movieId}>
+                                {movie.movieTitle}
+                            </Typography>
+                        </ListItemText>
+                        <ListItemText>
+                            <Typography>
+                                {map[movie.isActive]}
+                            </Typography>
+                        </ListItemText>
+                        {getButton(movie.movieId)}
+                    </ListItem>
+                )
+            )
+        )
+    }
     return (
         profile !== null ?
             <Box sx={{width: '100%', maxWidth: 700, bgcolor: 'background.paper'}}>
@@ -60,7 +71,7 @@ export default function Profile() {
                 </Grid>
 
                 <List>
-                    {profile ? getWatchTogether(profile.watchTogetherRequestsData, username, dispatch) : <Typography>Loading</Typography>}
+                    {profile ? getList() : <Typography>Loading</Typography>}
                 </List>
             </Box> : <Typography>Loading</Typography>
     )
